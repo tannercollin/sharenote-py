@@ -5,6 +5,7 @@ logging.basicConfig(
         level=logging.DEBUG if DEBUG else logging.INFO)
 
 from flask import abort, Flask, request, redirect, send_file
+from flask_cors import CORS
 import json
 import unicodedata
 import re
@@ -19,6 +20,7 @@ if not settings.SERVER_URL:
 HOST = '127.0.0.1' if settings.USING_REVERSE_PROXY else '0.0.0.0'
 
 flask_app = Flask(__name__, static_url_path='')
+CORS(flask_app)
 
 def slugify(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
