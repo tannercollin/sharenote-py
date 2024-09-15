@@ -8,7 +8,10 @@ from flask import abort, Flask, request, redirect
 import json
 import unicodedata
 import re
+import hashlib
 from threading import Lock
+
+import secrets
 
 mutex = Lock()
 
@@ -21,6 +24,14 @@ def slugify(value):
     value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
     value = re.sub('[^\w\s-]', '', value).strip().lower()
     return re.sub('[-\s]+', '-', value)
+
+def check_auth(headers):
+    nonce = request.headers.get('x-sharenote-nonce', '')
+    key = request.headers.get('x-sharenote-key', '')
+    string = nonce + secrets.API_KEY
+    hash_object = hashlib.sha256(string.encode())
+    digest = hash_object.hexdigest()
+    return digest == key
 
 @flask_app.route('/', methods=['GET'])
 def index():
@@ -46,7 +57,11 @@ def check_files():
 
 @flask_app.route('/v1/file/upload', methods=['POST'])
 def upload():
+    if not check_auth(request.headers):
+        abort(401)
+
     logging.debug('Headers: %s', request.headers)
+
     name = request.headers['x-sharenote-hash']
     filetype = request.headers['x-sharenote-filetype']
 
@@ -104,6 +119,9 @@ def cook_note(data, headers):
 
 @flask_app.route('/v1/file/create-note', methods=['POST'])
 def create_note():
+    if not check_auth(request.headers):
+        abort(401)
+
     data = request.get_json()
     title = data['template']['title']
 
