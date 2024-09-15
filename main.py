@@ -9,11 +9,8 @@ import json
 import unicodedata
 import re
 import hashlib
-from threading import Lock
 
 import secrets
-
-mutex = Lock()
 
 PORT = 8086
 HOST = '0.0.0.0' if DEBUG else '127.0.0.1'
