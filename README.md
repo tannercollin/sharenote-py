@@ -132,7 +132,7 @@ That means you have the right to study, change, and distribute the software and 
 
 ## Acknowledgements
 
-Thanks to [@alangrainger] (https://www.github.com/alangrainger) for making the Share Note plugin.
+Thanks to [@alangrainger](https://www.github.com/alangrainger) for making the Share Note plugin.
 
 Thanks to all the devs behind Obsidian.
 
