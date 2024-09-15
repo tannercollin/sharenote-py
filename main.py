@@ -53,6 +53,10 @@ def index():
 def appjs():
     return send_file('assets/app.js')
 
+@flask_app.route('/v1/account/get-key', methods=['GET'])
+def get_key():
+    return 'Please set your API key in the Share Note plugin settings to the one set in settings.py'
+
 @flask_app.route('/<nid>', methods=['GET'])
 def get_note(nid):
     if re.search('[^a-z0-9_-]', nid):
@@ -81,7 +85,13 @@ def check_files():
         result.append(f)
         logging.debug('File checked: %s', f)
 
-    return dict(success=True, files=result, css=False)
+    if os.path.isfile('static/theme.css'):
+        # TODO: figure out if css hash is needed and how it matters
+        css = dict(url=settings.SERVER_URL + '/static/theme.css')
+    else:
+        css = False
+
+    return dict(success=True, files=result, css=css)
 
 @flask_app.route('/v1/file/upload', methods=['POST'])
 def upload():
