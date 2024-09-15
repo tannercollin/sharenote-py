@@ -19,7 +19,7 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 4. Activate the plugin, open the plugin's settings page.
 5. Disable "Share as encrypted by default" at the bottom (not yet implemented), close settings.
 6. Edit the `.obsidian/plugins/share-note/data.json` file in your vault's filesystem.
-7. Set the "server" value to your server's URL from step 1 (no trailing slash).
+7. Set the "server" value to your server's URL from step 1, example: `https://notes.example.com` (no trailing slash).
 8. Open Obsidian's Community Plugins settings, then deactivate and reactivate the Share Note plugin.
 
 
@@ -53,7 +53,7 @@ $ source env/bin/activate
 (env) $ python main.py
 ```
 
-### Process Control
+### Python Process Control
 
 You can keep sharenote-py alive with [supervisor](https://pypi.org/project/supervisor/):
 
