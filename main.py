@@ -49,6 +49,10 @@ def index():
     except FileNotFoundError:
         return ''
 
+@flask_app.route('/app.js', methods=['GET'])
+def appjs():
+    return send_file('assets/app.js')
+
 @flask_app.route('/<nid>', methods=['GET'])
 def get_note(nid):
     if re.search('[^a-z0-9_-]', nid):
@@ -112,7 +116,7 @@ def upload():
 def cook_note(data):
     template = data['template']
 
-    with open('note-template.html', 'r') as f:
+    with open('assets/note-template.html', 'r') as f:
         html = f.read()
 
     html = html.replace('TEMPLATE_TITLE', template['title'])
@@ -132,7 +136,7 @@ def cook_note(data):
         'TEMPLATE_CSS',
         settings.SERVER_URL + '/static/theme.css'
     )
-    html = html.replace('TEMPLATE_ASSETS_WEBROOT', settings.SERVER_URL + '/static')
+    html = html.replace('TEMPLATE_ASSETS_WEBROOT', settings.SERVER_URL)
 
     # TODO: TEMPLATE_SCRIPTS for mathjax, etc
     html = html.replace('TEMPLATE_SCRIPTS', '')
