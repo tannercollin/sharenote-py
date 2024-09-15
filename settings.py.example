@@ -18,3 +18,7 @@ PORT = 8086
 #     SERVER_URL = 'http://123.123.123.123:8086'
 #     SERVER_URL = 'http://something.local:8086'
 SERVER_URL = ''
+
+# Optional, set to True if you are using a reverse proxy
+# (like nginx) on the same server. This adds a bit of security.
+USING_REVERSE_PROXY = False

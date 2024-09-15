@@ -16,7 +16,8 @@ if not settings.SERVER_URL:
     logging.error('Setting SERVER_URL unset, please edit settings.py')
     exit(1)
 
-HOST = '0.0.0.0'
+HOST = '127.0.0.1' if settings.USING_REVERSE_PROXY else '0.0.0.0'
+
 flask_app = Flask(__name__, static_url_path='')
 
 def slugify(value):
