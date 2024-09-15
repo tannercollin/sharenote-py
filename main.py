@@ -10,7 +10,7 @@ import unicodedata
 import re
 import hashlib
 
-import secrets
+import settings
 
 PORT = 8086
 HOST = '0.0.0.0' if DEBUG else '127.0.0.1'
@@ -23,7 +23,7 @@ def slugify(value):
     return re.sub('[-\s]+', '-', value)
 
 def gen_short_code(title):
-    string = title + secrets.CODE_SEED
+    string = title + settings.SECRET_SEED
     hash_object = hashlib.sha256(string.encode())
     digest = hash_object.hexdigest()
     return digest[:6]
@@ -31,7 +31,7 @@ def gen_short_code(title):
 def check_auth(headers):
     nonce = request.headers.get('x-sharenote-nonce', '')
     key = request.headers.get('x-sharenote-key', '')
-    string = nonce + secrets.API_KEY
+    string = nonce + settings.SECRET_API_KEY
     hash_object = hashlib.sha256(string.encode())
     digest = hash_object.hexdigest()
     return digest == key
@@ -52,9 +52,9 @@ def check_files():
             f['url'] = 'https://note-dev.dns.t0.vc/' + name
         else:
             f['url'] = False
-        result.append(f)
 
-    print(result)
+        result.append(f)
+        logging.debug('File checked: %s', f)
 
     return dict(success=True, files=result, css=False)
 
@@ -73,6 +73,7 @@ def upload():
         name = request.headers['x-sharenote-id']
 
     name += '.' + filetype
+    logging.info('Uploaded file: %s', name)
 
     # TODO: sanitize the name
     with open('static/' + name, 'wb') as f:
@@ -115,7 +116,7 @@ def cook_note(data, headers):
 
     html = html.replace('TEMPLATE_NOTE_CONTENT', template['content'])
 
-    # no point, I trust the server
+    # no point, I trust my own server
     html = html.replace('TEMPLATE_ENCRYPTED_DATA', '')
 
     return html
