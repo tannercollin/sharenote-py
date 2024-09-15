@@ -12,9 +12,11 @@ import hashlib
 
 import settings
 
-PORT = 8086
-HOST = '0.0.0.0' if DEBUG else '127.0.0.1'
+if not settings.SERVER_URL:
+    logging.error('Setting SERVER_URL unset, please edit settings.py')
+    exit(1)
 
+HOST = '0.0.0.0'
 flask_app = Flask(__name__, static_url_path='')
 
 def slugify(value):
@@ -49,7 +51,7 @@ def check_files():
     for f in files:
         name = f['hash'] + '.' + f['filetype']
         if os.path.isfile('static/' + name):
-            f['url'] = 'https://note-dev.dns.t0.vc/' + name
+            f['url'] = settings.SERVER_URL + '/' + name
         else:
             f['url'] = False
 
@@ -79,7 +81,7 @@ def upload():
     with open('static/' + name, 'wb') as f:
         f.write(request.data)
 
-    return dict(url='https://note-dev.dns.t0.vc/' + name)
+    return dict(url=settings.SERVER_URL + '/' + name)
 
 def cook_note(data):
     template = data['template']
@@ -102,9 +104,9 @@ def cook_note(data):
     )
     html = html.replace(
         'TEMPLATE_CSS',
-        'https://note-dev.dns.t0.vc/theme.css'
+        settings.SERVER_URL + '/theme.css'
     )
-    html = html.replace('TEMPLATE_ASSETS_WEBROOT', 'https://note-dev.dns.t0.vc')
+    html = html.replace('TEMPLATE_ASSETS_WEBROOT', settings.SERVER_URL)
 
     # TODO: TEMPLATE_SCRIPTS for mathjax, etc
     html = html.replace('TEMPLATE_SCRIPTS', '')
@@ -142,8 +144,8 @@ def create_note():
     with open('static/' + filename, 'w') as f:
         f.write(html)
 
-    return dict(url='https://note-dev.dns.t0.vc/' + filename)
+    return dict(url=settings.SERVER_URL + '/' + filename)
 
 
-flask_app.run(host=HOST, port=PORT)
+flask_app.run(host=HOST, port=settings.PORT)
 
