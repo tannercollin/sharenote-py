@@ -142,6 +142,7 @@ sdkconfig.old
 # ======
 
 data/
+settings.py
 secrets.py
 secrets.h
 *.bin
