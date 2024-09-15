@@ -10,6 +10,7 @@ import json
 import unicodedata
 import re
 import hashlib
+import glob
 
 import settings
 
@@ -19,7 +20,7 @@ if not settings.SERVER_URL:
 
 HOST = '127.0.0.1' if settings.USING_REVERSE_PROXY else '0.0.0.0'
 
-flask_app = Flask(__name__, static_url_path='')
+flask_app = Flask(__name__)
 CORS(flask_app)
 
 def slugify(value):
@@ -43,7 +44,22 @@ def check_auth(headers):
 
 @flask_app.route('/', methods=['GET'])
 def index():
-    return send_file('static/index.html')
+    try:
+        return send_file('static/index.html')
+    except FileNotFoundError:
+        return ''
+
+@flask_app.route('/<nid>', methods=['GET'])
+def get_note(nid):
+    if re.search('[^a-z0-9_-]', nid):
+        abort(404)
+
+    note = 'static/' + nid + '.html'
+
+    if os.path.isfile(note):
+        return send_file(note)
+    else:
+        abort(404)
 
 @flask_app.route('/v1/file/check-files', methods=['POST'])
 def check_files():
@@ -54,7 +70,7 @@ def check_files():
     for f in files:
         name = f['hash'] + '.' + f['filetype']
         if os.path.isfile('static/' + name):
-            f['url'] = settings.SERVER_URL + '/' + name
+            f['url'] = settings.SERVER_URL + '/static/' + name
         else:
             f['url'] = False
 
@@ -91,7 +107,7 @@ def upload():
     with open('static/' + name, 'wb') as f:
         f.write(request.data)
 
-    return dict(url=settings.SERVER_URL + '/' + name)
+    return dict(success=True, url=settings.SERVER_URL + '/static/' + name)
 
 def cook_note(data):
     template = data['template']
@@ -114,9 +130,9 @@ def cook_note(data):
     )
     html = html.replace(
         'TEMPLATE_CSS',
-        settings.SERVER_URL + '/theme.css'
+        settings.SERVER_URL + '/static/theme.css'
     )
-    html = html.replace('TEMPLATE_ASSETS_WEBROOT', settings.SERVER_URL)
+    html = html.replace('TEMPLATE_ASSETS_WEBROOT', settings.SERVER_URL + '/static')
 
     # TODO: TEMPLATE_SCRIPTS for mathjax, etc
     html = html.replace('TEMPLATE_SCRIPTS', '')
@@ -151,15 +167,38 @@ def create_note():
         logging.error('Invalid note name, aborting')
         abort(400)
 
-    filename = slug + '-' + short_code + '.html'
+    filename = slug + '-' + short_code
 
     if title.lower() == 'share note index':
-        filename = 'index.html'
+        filename = 'index'
 
-    with open('static/' + filename, 'w') as f:
+    with open('static/' + filename + '.html', 'w') as f:
         f.write(html)
 
-    return dict(url=settings.SERVER_URL + '/' + filename)
+    return dict(success=True, url=settings.SERVER_URL + '/' + filename)
+
+@flask_app.route('/v1/file/delete', methods=['POST'])
+def delete_note():
+    if not check_auth(request.headers):
+        abort(401)
+
+    data = request.get_json()
+    filename = data['filename']
+
+    if filename == 'index':
+        search_glob = 'static/index.html'
+    else:
+        search_glob = 'static/*-{}.html'.format(data['filename'])
+
+    search_result = glob.glob(search_glob)
+
+    if len(search_result) != 1:
+        abort(404)
+
+    note = search_result[0]
+    os.remove(note)
+
+    return dict(success=True)
 
 
 flask_app.run(host=HOST, port=settings.PORT)
