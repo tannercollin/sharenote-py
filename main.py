@@ -53,6 +53,10 @@ def index():
 def appjs():
     return send_file('assets/app.js')
 
+@flask_app.route('/favicon.ico', methods=['GET'])
+def favicon():
+    return send_file('assets/favicon.ico')
+
 @flask_app.route('/v1/account/get-key', methods=['GET'])
 def get_key():
     return 'Please set your API key in the Share Note plugin settings to the one set in settings.py'
