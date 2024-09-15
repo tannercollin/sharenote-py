@@ -6,33 +6,25 @@ logging.basicConfig(
 
 from flask import abort, Flask, request, redirect
 import json
-import shelve
+import unicodedata
+import re
 from threading import Lock
 
 mutex = Lock()
 
-with shelve.open('data/data.db') as db:
-    if 'notes' not in db:
-        db['notes'] = dict()
-    if 'files' not in db:
-        db['files'] = dict()
-
 PORT = 8086
 HOST = '0.0.0.0' if DEBUG else '127.0.0.1'
 
-flask_app = Flask(__name__)
+flask_app = Flask(__name__, static_url_path='')
+
+def slugify(value):
+    value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+    value = re.sub('[^\w\s-]', '', value).strip().lower()
+    return re.sub('[-\s]+', '-', value)
 
 @flask_app.route('/', methods=['GET'])
 def index():
     return 'Share Note Python API server'
-
-@flask_app.route('/<nid>', methods=['GET'])
-def get_note(nid):
-    with shelve.open('data/data.db') as db:
-        note = db['notes'][nid]
-
-    return note
-
 
 @flask_app.route('/v1/file/check-files', methods=['POST'])
 def check_files():
@@ -43,7 +35,7 @@ def check_files():
     for f in files:
         name = f['hash'] + '.' + f['filetype']
         if os.path.isfile('static/' + name):
-            f['url'] = 'https://note-dev.dns.t0.vc/static/' + name
+            f['url'] = 'https://note-dev.dns.t0.vc/' + name
         else:
             f['url'] = False
         result.append(f)
@@ -68,7 +60,7 @@ def upload():
     with open('static/' + name, 'wb') as f:
         f.write(request.data)
 
-    return dict(url='https://note-dev.dns.t0.vc/static/' + name)
+    return dict(url='https://note-dev.dns.t0.vc/' + name)
 
 def cook_note(data, headers):
     template = data['template']
@@ -91,25 +83,24 @@ def cook_note(data, headers):
     )
     html = html.replace(
         'TEMPLATE_CSS',
-        'https://note-dev.dns.t0.vc/static/' + request.headers['x-sharenote-id'] + '.css'
+        'https://note-dev.dns.t0.vc/' + request.headers['x-sharenote-id'] + '.css'
     )
-    html = html.replace('TEMPLATE_ASSETS_WEBROOT', 'https://note-dev.dns.t0.vc/static')
+    html = html.replace('TEMPLATE_ASSETS_WEBROOT', 'https://note-dev.dns.t0.vc')
 
     # TODO: TEMPLATE_SCRIPTS for mathjax, etc
     html = html.replace('TEMPLATE_SCRIPTS', '')
+
+    # hard code for now:
     html = html.replace('TEMPLATE_BODY', 'class="mod-linux is-frameless is-hidden-frameless obsidian-app theme-light show-inline-title show-ribbon show-view-header is-focused share-note-plugin" style="--zoom-factor: 1; --font-text-size: 16px;"')
     html = html.replace('TEMPLATE_PREVIEW', 'class="markdown-preview-view markdown-rendered node-insert-event allow-fold-headings show-indentation-guide allow-fold-lists show-properties" style="tab-size: 4;"')
     html = html.replace('TEMPLATE_PUSHER', 'class="markdown-preview-pusher" style="width: 1px; height: 0.1px;"')
 
     html = html.replace('TEMPLATE_NOTE_CONTENT', template['content'])
 
+    # no point, I trust the server
     html = html.replace('TEMPLATE_ENCRYPTED_DATA', '')
 
     return html
-
-
-
-
 
 @flask_app.route('/v1/file/create-note', methods=['POST'])
 def create_note():
@@ -119,13 +110,13 @@ def create_note():
     logging.debug('Note data: %s', json.dumps(data, indent=4))
 
     html = cook_note(data, request.headers)
+    filename = slugify(title) + '.html'
 
-    mutex.acquire()
-    with shelve.open('data/data.db', writeback=True) as db:
-        db['notes'][title] = html
-    mutex.release()
+    # TODO: sanitize the name
+    with open('static/' + filename, 'w') as f:
+        f.write(html)
 
-    return dict(url='https://note-dev.dns.t0.vc/'+title)
+    return dict(url='https://note-dev.dns.t0.vc/' + filename)
 
 
 flask_app.run(host=HOST, port=PORT)
