@@ -4,7 +4,7 @@ logging.basicConfig(
         format='[%(asctime)s] %(levelname)s %(module)s/%(funcName)s - %(message)s',
         level=logging.DEBUG if DEBUG else logging.INFO)
 
-from flask import abort, Flask, request, redirect
+from flask import abort, Flask, request, redirect, send_file
 import json
 import unicodedata
 import re
@@ -41,7 +41,7 @@ def check_auth(headers):
 
 @flask_app.route('/', methods=['GET'])
 def index():
-    return 'Share Note Python API server'
+    return send_file('static/index.html')
 
 @flask_app.route('/v1/file/check-files', methods=['POST'])
 def check_files():
@@ -136,6 +136,9 @@ def create_note():
 
     html = cook_note(data, request.headers)
     filename = slugify(title) + '-' + short_code + '.html'
+
+    if title.lower() == 'share note index':
+        filename = 'index.html'
 
     # TODO: sanitize the name
     with open('static/' + filename, 'w') as f:
