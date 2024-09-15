@@ -71,6 +71,14 @@ def upload():
     name = request.headers['x-sharenote-hash']
     filetype = request.headers['x-sharenote-filetype']
 
+    if re.search(r'[^a-f0-9]', name):
+        logging.error('Invalid hash for file name, aborting')
+        abort(400)
+
+    if filetype.lower() not in settings.ALLOWED_FILETYPES:
+        logging.error('Invalid file type, aborting')
+        abort(415)
+
     # if the file is css, set the file name to user's ID
     if filetype == 'css':
         name = 'theme'
@@ -78,7 +86,6 @@ def upload():
     name += '.' + filetype
     logging.info('Uploaded file: %s', name)
 
-    # TODO: sanitize the name
     with open('static/' + name, 'wb') as f:
         f.write(request.data)
 
@@ -136,12 +143,17 @@ def create_note():
     logging.debug('Note data: %s', json.dumps(data, indent=4))
 
     html = cook_note(data)
-    filename = slugify(title) + '-' + short_code + '.html'
+    slug = slugify(title)
+
+    if re.search('[^a-z0-9_-]', slug):
+        logging.error('Invalid note name, aborting')
+        abort(400)
+
+    filename = slug + '-' + short_code + '.html'
 
     if title.lower() == 'share note index':
         filename = 'index.html'
 
-    # TODO: sanitize the name
     with open('static/' + filename, 'w') as f:
         f.write(html)
 
