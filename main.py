@@ -69,8 +69,8 @@ def upload():
     filetype = request.headers['x-sharenote-filetype']
 
     # if the file is css, set the file name to user's ID
-    if request.headers['x-sharenote-filetype'] == 'css':
-        name = request.headers['x-sharenote-id']
+    if filetype == 'css':
+        name = 'theme'
 
     name += '.' + filetype
     logging.info('Uploaded file: %s', name)
@@ -81,7 +81,7 @@ def upload():
 
     return dict(url='https://note-dev.dns.t0.vc/' + name)
 
-def cook_note(data, headers):
+def cook_note(data):
     template = data['template']
 
     with open('note-template.html', 'r') as f:
@@ -102,7 +102,7 @@ def cook_note(data, headers):
     )
     html = html.replace(
         'TEMPLATE_CSS',
-        'https://note-dev.dns.t0.vc/' + request.headers['x-sharenote-id'] + '.css'
+        'https://note-dev.dns.t0.vc/theme.css'
     )
     html = html.replace('TEMPLATE_ASSETS_WEBROOT', 'https://note-dev.dns.t0.vc')
 
@@ -132,7 +132,7 @@ def create_note():
 
     logging.debug('Note data: %s', json.dumps(data, indent=4))
 
-    html = cook_note(data, request.headers)
+    html = cook_note(data)
     filename = slugify(title) + '-' + short_code + '.html'
 
     if title.lower() == 'share note index':
