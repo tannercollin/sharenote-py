@@ -25,6 +25,12 @@ def slugify(value):
     value = re.sub('[^\w\s-]', '', value).strip().lower()
     return re.sub('[-\s]+', '-', value)
 
+def gen_short_code(title):
+    string = title + secrets.CODE_SEED
+    hash_object = hashlib.sha256(string.encode())
+    digest = hash_object.hexdigest()
+    return digest[:6]
+
 def check_auth(headers):
     nonce = request.headers.get('x-sharenote-nonce', '')
     key = request.headers.get('x-sharenote-key', '')
@@ -124,11 +130,12 @@ def create_note():
 
     data = request.get_json()
     title = data['template']['title']
+    short_code = gen_short_code(title)
 
     logging.debug('Note data: %s', json.dumps(data, indent=4))
 
     html = cook_note(data, request.headers)
-    filename = slugify(title) + '.html'
+    filename = slugify(title) + '-' + short_code + '.html'
 
     # TODO: sanitize the name
     with open('static/' + filename, 'w') as f:
