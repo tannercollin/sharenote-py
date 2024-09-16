@@ -16,7 +16,7 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 ## Setup
 
 1. Point a domain / subdomain to your server.
-2. Set up the sharenote-py server using the instructions below.
+2. Set up the sharenote-py server using the Docker or Python instructions below.
 3. Install the "Share Note" community plugin by Alan Grainger.
 4. Activate the plugin, open the plugin's settings page.
 5. Disable "Share as encrypted by default" at the bottom (not yet implemented), close settings.
@@ -32,16 +32,54 @@ You can back up the `static/` directory where the notes are if you want, but it'
 You should back up your `settings.py` file's `SECRET_SEED` value so the URLs of your shared notes don't ever change to prevent links from breaking.
 
 
-## Python-based Installation
+## Docker Installation
+
+Assuming you already have Docker [installed](https://docs.docker.com/engine/install/debian/#install-using-the-repository):
+
+```text
+$ cp settings.py.example settings.py
+$ vim settings.py
+$ sudo docker compose build sharenote
+$ sudo docker compose up -d
+```
+
+The sharenote-py server will now be listening on port 8086.
+
+You should now skip to the reverse proxy instructions below, or set one up with Docker.
+
+
+### Managing Docker
+
+View logs:
+
+```text
+$ docker compose logs -f
+```
+
+How to update:
+
+```text
+$ sudo docker compose down
+$ git pull --rebase
+$ sudo docker compose build sharenote
+$ sudo docker compose up -d
+```
+
+Run the last two commands any time you make a change (ie. to `settings.py`).
+
+
+## Python Installation
 
 This guide assumes a modern Debian or Ubuntu GNU/Linux server.
 
 Install dependencies:
+
 ```text
 $ sudo apt install python3 python3-pip python3-virtualenv
 ```
 
 Clone this repo, create a venv, activate it, and install:
+
 ```text
 $ git clone https://github.com/tannercollin/sharenote-py.git
 $ cd sharenote-py/
@@ -51,12 +89,14 @@ $ source env/bin/activate
 ```
 
 Copy the settings file and edit it:
+
 ```text
 $ cp settings.py.example settings.py
 $ sensible-editor settings.py
 ```
 
 You can now run it directly:
+
 ```text
 $ source env/bin/activate
 (env) $ DEBUG=true python main.py
