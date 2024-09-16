@@ -219,5 +219,6 @@ def delete_note():
     return dict(success=True)
 
 
-flask_app.run(host=HOST, port=settings.PORT)
+if __name__ == '__main__':
+    flask_app.run(host=HOST, port=settings.PORT)
 

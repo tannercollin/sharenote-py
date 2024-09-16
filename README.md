@@ -2,6 +2,7 @@
 
 A self-hosted alternative backend for the Obsidian [Share Note](https://github.com/alangrainger/share-note) plugin.
 
+
 ## Description
 
 This re-implements the [share-note-self-hosted-backend](https://github.com/alangrainger/share-note-self-hosted-backend) in Python with a few changes:
@@ -11,16 +12,24 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 - note encryption is not yet implemented (I trust my own server)
 - note expiry is not yet implemented
 
+
 ## Setup
 
 1. Point a domain / subdomain to your server.
-2. Set up sharenote-py using the instructions below.
+2. Set up the sharenote-py server using the instructions below.
 3. Install the "Share Note" community plugin by Alan Grainger.
 4. Activate the plugin, open the plugin's settings page.
 5. Disable "Share as encrypted by default" at the bottom (not yet implemented), close settings.
 6. Edit the `.obsidian/plugins/share-note/data.json` file in your vault's filesystem.
 7. Set the "server" value to your server's URL from step 1, example: `https://notes.example.com` (no trailing slash).
 8. Open Obsidian's Community Plugins settings, then deactivate and reactivate the Share Note plugin.
+
+
+### Backup
+
+You can back up the `static/` directory where the notes are if you want, but it's not necessary as they can all be re-shared.
+
+You should back up your `settings.py` file's `SECRET_SEED` value so the URLs of your shared notes don't ever change to prevent links from breaking.
 
 
 ## Python-based Installation
@@ -50,8 +59,11 @@ $ sensible-editor settings.py
 You can now run it directly:
 ```text
 $ source env/bin/activate
-(env) $ python main.py
+(env) $ DEBUG=true python main.py
 ```
+
+The above run command is useful for development / debugging. In production we'll run it with `gunicorn`.
+
 
 ### Python Process Control
 
@@ -69,7 +81,7 @@ Edit the file, replacing your user and sharenote-py location:
 [program:sharenote]
 user=tanner
 directory=/home/tanner/sharenote-py
-command=/home/tanner/sharenote-py/env/bin/python -u main.py
+command=/home/tanner/sharenote-py/env/bin/gunicorn -w 4 --bind 0.0.0.0:8086 main:flask_app
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/sharenote.log
@@ -78,7 +90,23 @@ stdout_logfile=/var/log/sharenote.log
 stdout_logfile_maxbytes=10MB
 ```
 
+Load the supervisor config:
+
+```text
+$ sudo supervisorctl reread; sudo supervisorctl reload
+```
+
+You can control the supervisor process with these commands:
+
+```text
+$ sudo supervisorctl status sharenote
+$ sudo supervisorctl restart sharenote
+$ sudo supervisorctl stop sharenote
+$ sudo supervisorctl start sharenote
+```
+
 Next configure a reverse proxy following the instructions below.
+
 
 ## Reverse proxy
 
@@ -124,11 +152,13 @@ $ sudo certbot --nginx
 
 Follow prompts to activate HTTPS and enable redirects.
 
+
 ## License
 
 This program is free and open-source software licensed under the MIT License. Please see the `LICENSE` file for details.
 
 That means you have the right to study, change, and distribute the software and source code to anyone and for any purpose. You deserve these rights.
+
 
 ## Acknowledgements
 
