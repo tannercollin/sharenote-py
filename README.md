@@ -11,6 +11,8 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 - readable links in the form of `https://notes.example.com/my-test-note-d731f1`
 - note encryption is not yet implemented (I trust my own server)
 - note expiry is not yet implemented
+- bottom right "Published with Share Note" replaced with larger theme toggle button
+- note named "Share Note Index" presented as domain's index page
 
 
 ## Setup
