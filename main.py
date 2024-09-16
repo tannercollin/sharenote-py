@@ -173,19 +173,36 @@ def create_note():
         abort(401)
 
     data = request.get_json()
-    title = data['template']['title']
-    short_code = gen_short_code(title)
-
     logging.debug('Note data: %s', json.dumps(data, indent=4))
+    title = data['template']['title']
 
-    html = cook_note(data)
-    slug = slugify(title)
+    filename = ''
 
-    if re.search('[^a-z0-9_-]', slug):
+    if 'filename' in data:
+        # if a short code gets sent over, try to find the existing note's filename
+        # so links don't break in case the note's title changed
+        short_code = data['filename']
+        search_glob = 'static/*-{}.html'.format(short_code)
+        search_result = glob.glob(search_glob)
+        if len(search_result) == 1:
+            filename = search_result[0]
+            if filename.startswith('static/'):
+                filename = filename[7:]
+            if filename.endswith('.html'):
+                filename = filename[:-5]
+            logging.info('Using existing filename: %s', filename)
+
+    if not filename:
+        short_code = gen_short_code(title)
+        slug = slugify(title)
+        filename = slug + '-' + short_code
+        logging.info('Generating new filename: %s', filename)
+
+    if re.search('[^a-z0-9_-]', filename):
         logging.error('Invalid note name, aborting')
         abort(400)
 
-    filename = slug + '-' + short_code
+    html = cook_note(data)
 
     if title.lower() == 'share note index':
         filename = 'index'
