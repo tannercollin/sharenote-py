@@ -1,62 +1,61 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TEMPLATE_TITLE</title>
-    TEMPLATE_OG_TITLE
-    TEMPLATE_META_DESCRIPTION
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <style>
-        html,
-        body {
-            overflow: visible !important;
-        }
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>TEMPLATE_TITLE</title>
+		TEMPLATE_OG_TITLE
+		TEMPLATE_META_DESCRIPTION
+		<link rel="icon" type="image/x-icon" href="/favicon.ico">
+		<style>
+			html, body {
+				overflow: visible !important;
+			}
 
-        .view-content {
-            height: 100% !important;
-        }
+			.view-content {
+				height: 100% !important;
+			}
 
-        .my-status-bar {
-            display: flex;
-            position: fixed !important;
-            bottom: 0;
-            right: 0;
-            z-index: 99;
-        }
+			.my-status-bar {
+				display: flex;
+				position: fixed !important;
+				bottom: 0;
+				right: 0;
+				z-index: 99;
+			}
 
-        TEMPLATE_WIDTH
-    </style>
-    <link rel="stylesheet" href="TEMPLATE_CSS">
-    <script src="TEMPLATE_ASSETS_WEBROOT/app.js"></script>
-    TEMPLATE_SCRIPTS
-</head>
-<body TEMPLATE_BODY>
-<div class="app-container">
-    <div class="horizontal-main-container">
-        <div class="workspace">
-            <div class="workspace-split mod-vertical mod-root">
-                <div class="workspace-leaf mod-active">
-                    <div class="workspace-leaf-content">
-						<div class="markdown-reading-view" style="height:100%;width:100%;">
-							<div TEMPLATE_PREVIEW>
-								<div class="markdown-preview-sizer markdown-preview-section">
-									<div TEMPLATE_PUSHER></div>
-									TEMPLATE_NOTE_CONTENT
+			TEMPLATE_WIDTH
+		</style>
+		<link rel="stylesheet" href="TEMPLATE_CSS">
+		<script src="TEMPLATE_ASSETS_WEBROOT/app.js"></script>
+		TEMPLATE_SCRIPTS
+	</head>
+	<body TEMPLATE_BODY>
+		<div class="app-container">
+			<div class="horizontal-main-container">
+				<div class="workspace">
+					<div class="workspace-split mod-vertical mod-root">
+						<div class="workspace-leaf mod-active">
+							<div class="workspace-leaf-content">
+								<div class="markdown-reading-view" style="height:100%;width:100%;">
+									<div TEMPLATE_PREVIEW>
+										<div class="markdown-preview-sizer markdown-preview-section">
+											<div TEMPLATE_PUSHER></div>
+											TEMPLATE_NOTE_CONTENT
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-	<div class='my-status-bar'>
-		<div class='status-bar-item'>
-			<button id='theme-mode-toggle' class='status-bar-item-segment'>Toggle Theme 🌓</span>
+					</div>
+				</div>
+			</div>
+			<div class='my-status-bar'>
+				<div class='status-bar-item'>
+					<button id='theme-mode-toggle' class='status-bar-item-segment'>Toggle Theme 🌓</span>
+				</div>
+			</div>
 		</div>
-	</div>
-</div>
-<script>initDocument()</script>
-</body>
+		<script>initDocument()</script>
+	</body>
 </html>
