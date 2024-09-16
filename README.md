@@ -29,7 +29,7 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 
 ### Backup
 
-You should back up the `static/` directory where the notes are so that links don't break if you have to set this all back up.
+You should back up the `static/` directory where the notes are so that links don't break if you have to set this all up again.
 
 
 ## Docker Installation
