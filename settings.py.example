@@ -2,22 +2,15 @@
 # set to something random like: head /dev/urandom | md5sum
 SECRET_API_KEY = ''
 
-# String hashed with the note name to generate random code in the note's URL:
-# example.com/my-note-f3b9b3.html
-# so that note names can't be guessed
-# this is separate so links don't break if your API key or user ID changes
-# set to something random like: head /dev/urandom | md5sum
-SECRET_SEED = ''
-
-# Listen port
-PORT = 8086
-
 # This API server's URL without a trailing slash
 # Some examples might be:
 #     SERVER_URL = 'https://notes.example.com'
 #     SERVER_URL = 'http://123.123.123.123:8086'
 #     SERVER_URL = 'http://something.local:8086'
 SERVER_URL = ''
+
+# Listen port
+PORT = 8086
 
 # File types allowed to be uploaded
 # Copied from the Share Note API source code
