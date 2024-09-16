@@ -115,13 +115,15 @@ $ sudo touch /etc/supervisor/conf.d/sharenote.conf
 $ sudoedit /etc/supervisor/conf.d/sharenote.conf
 ```
 
-Edit the file, replacing your user and sharenote-py location:
+Edit the file, replacing `tanner` with your user and sharenote-py location:
 
 ```text
 [program:sharenote]
 user=tanner
 directory=/home/tanner/sharenote-py
-command=/home/tanner/sharenote-py/env/bin/gunicorn -w 4 --bind 0.0.0.0:8086 main:flask_app
+command=/home/tanner/sharenote-py/env/bin/gunicorn main:flask_app
+stopasgroup=true
+killasgroup=true
 autostart=true
 autorestart=true
 stderr_logfile=/var/log/sharenote.log
