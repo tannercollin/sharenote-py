@@ -29,9 +29,7 @@ This re-implements the [share-note-self-hosted-backend](https://github.com/alang
 
 ### Backup
 
-You can back up the `static/` directory where the notes are if you want, but it's not necessary as they can all be re-shared.
-
-You should back up your `settings.py` file's `SECRET_SEED` value so the URLs of your shared notes don't ever change to prevent links from breaking.
+You should back up the `static/` directory where the notes are so that links don't break if you have to set this all back up.
 
 
 ## Docker Installation

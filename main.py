@@ -29,7 +29,7 @@ def slugify(value):
     return re.sub('[-\s]+', '-', value)
 
 def gen_short_code(title):
-    string = title + settings.SECRET_SEED
+    string = title + settings.SECRET_API_KEY
     hash_object = hashlib.sha256(string.encode())
     digest = hash_object.hexdigest()
     return digest[:6]
