@@ -17,8 +17,12 @@
             height: 100% !important;
         }
 
-        .status-bar {
+        .my-status-bar {
+            display: flex;
             position: fixed !important;
+            bottom: 0;
+            right: 0;
+            z-index: 99;
         }
 
         TEMPLATE_WIDTH
@@ -47,6 +51,12 @@
             </div>
         </div>
     </div>
+	<div class='my-status-bar'>
+		<div class='status-bar-item'>
+			<button id='theme-mode-toggle' class='status-bar-item-segment'>Toggle Theme 🌓</span>
+		</div>
+	</div>
 </div>
+<script>initDocument()</script>
 </body>
 </html>
