@@ -8,11 +8,11 @@ A self-hosted alternative backend for the Obsidian [Share Note](https://github.c
 This re-implements the [share-note-self-hosted-backend](https://github.com/alangrainger/share-note-self-hosted-backend) in Python with a few changes:
 - fully documented setup instructions
 - no database
-- readable links in the form of `https://notes.example.com/my-test-note-d731f1`
+- readable links in the form of: https://notes.dns.t0.vc/share-note-example-7cf9f1
 - note encryption is not yet implemented (I trust my own server)
 - note expiry is not yet implemented
 - bottom right "Published with Share Note" replaced with larger theme toggle button
-- note named "Share Note Index" presented as domain's index page
+- note named "Share Note Index" presented as domain's index page, example: https://notes.dns.t0.vc/
 
 
 ## Setup
