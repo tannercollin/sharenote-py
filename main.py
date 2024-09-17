@@ -90,7 +90,6 @@ def check_files():
         logging.debug('File checked: %s', f)
 
     if os.path.isfile('static/theme.css'):
-        # TODO: figure out if css hash is needed and how it matters
         css = dict(url=settings.SERVER_URL + '/static/theme.css')
     else:
         css = False
@@ -115,7 +114,6 @@ def upload():
         logging.error('Invalid file type, aborting')
         abort(415)
 
-    # if the file is css, set the file name to user's ID
     if filetype == 'css':
         name = 'theme'
 
