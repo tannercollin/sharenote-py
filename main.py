@@ -47,7 +47,7 @@ def index():
     try:
         return send_file('static/index.html')
     except FileNotFoundError:
-        return ''
+        return 'The sharenote-py server is running. To customize this page, upload a note titled <b>Share Note Index</b>.'
 
 @flask_app.route('/app.js', methods=['GET'])
 def appjs():
