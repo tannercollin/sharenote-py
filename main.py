@@ -172,6 +172,14 @@ def create_note():
 
     data = request.get_json()
     logging.debug('Note data: %s', json.dumps(data, indent=4))
+
+    if data['template'].get('encrypted', False):
+        logging.error('###################################################')
+        logging.error('## Encrypted notes are not implemented yet.      ##')
+        logging.error('## Please disable in Share Note plugin settings. ##')
+        logging.error('###################################################')
+        abort(400)
+
     title = data['template']['title']
 
     filename = ''
